@@ -51,8 +51,11 @@ cc.Class({
     videoPlayerEvent (sender, event) {
         if(event === cc.VideoPlayer.EventType.READY_TO_PLAY) {
             this.videoPlayer.play();
-        } else if(event === cc.VideoPlayer.EventType.COMPLETED) {
+            return;
+        } 
+        if(event === cc.VideoPlayer.EventType.COMPLETED) {
             this.playGuessAnim();
+            return;
         }
         // else if(event === cc.VideoPlayer.EventType.CLICKED) {
         //     this.videoPlayer.node.removeFromParent();
