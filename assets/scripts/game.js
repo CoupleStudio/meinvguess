@@ -30,6 +30,11 @@ cc.Class({
         videoPlayer: {
             default: null,
             type: cc.VideoPlayer,
+        }, 
+
+        guessAnim: {
+            default: null,
+            type: cc.Animation,
         }
     },
 
@@ -46,10 +51,32 @@ cc.Class({
     videoPlayerEvent (sender, event) {
         if(event === cc.VideoPlayer.EventType.READY_TO_PLAY) {
             this.videoPlayer.play();
-        } 
+        } else if(event === cc.VideoPlayer.EventType.COMPLETED) {
+            this.playGuessAnim();
+        }
         // else if(event === cc.VideoPlayer.EventType.CLICKED) {
         //     this.videoPlayer.node.removeFromParent();
         //     this.title.enabled = true;
         // }
+    },
+
+    playGuessAnim () {
+
+        var animation = this.guessAnim;
+        animation.node.active = !animation.node.active;
+        cc.log('debug0');
+        
+        cc.log(animation);
+        cc.loader.loadRes("textures/guessAnim", cc.SpriteAtlas, (err, atlas) => {
+            var spriteFrames = atlas.getSpriteFrames();
+            var clip = cc.AnimationClip.createWithSpriteFrames(spriteFrames, 10);
+            clip.name = 'guess';
+            clip.wrapMode = cc.WrapMode.Loop;
+       
+            animation.addClip(clip);
+            animation.play('guess');
+        });
     }
+
+
 });
