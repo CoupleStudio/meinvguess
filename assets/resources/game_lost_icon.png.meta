@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "cc2b02a4-205a-4ab7-89a0-7659e70dc83e",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "game_lost_icon": {
+      "ver": "1.0.3",
+      "uuid": "342f298a-743a-47e0-8494-1a2c34bc2eb7",
+      "rawTextureUuid": "cc2b02a4-205a-4ab7-89a0-7659e70dc83e",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 181,
+      "height": 84,
+      "rawWidth": 181,
+      "rawHeight": 84,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}
