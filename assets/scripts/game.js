@@ -82,6 +82,7 @@ cc.Class({
 
     onVideoPlayerEvent (sender, event) {
         if(event === cc.VideoPlayer.EventType.COMPLETED) {
+            cc.log('debug00');
             this.playGuessAnim();
             this.showMyGuess();
             return;
