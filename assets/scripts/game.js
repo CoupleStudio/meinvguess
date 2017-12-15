@@ -81,11 +81,11 @@ cc.Class({
     // update (dt) {},
 
     onVideoPlayerEvent (sender, event) {
-        // if(event === cc.VideoPlayer.EventType.COMPLETED) {
-        //     this.playGuessAnim();
-        //     this.showMyGuess();
-        //     return;
-        // }
+        if(event === cc.VideoPlayer.EventType.COMPLETED) {
+            this.playGuessAnim();
+            this.showMyGuess();
+            return;
+        }
 
     },
 
