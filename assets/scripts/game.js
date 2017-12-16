@@ -194,58 +194,22 @@ cc.Class({
 
         this._status = !this._status;
 
-        //播放对应结果的相关视频及相关生命值
-        // if(final == 0) {        //失败
-        //     cc.log('shibai');
-        //     var delayAct = cc.delayTime(2);
-        //     var cbAction = cc.callFunc(this.playVideo, this.node, Type.Win);
-        //     cc.log('shibai1');
-        //     this.node.runAction(cc.sequence(delayAct, cbAction));
-        //     cc.log('shibai2');
-        //     // this.playVideo(Type.Win);
-        // }
-        // if(final == 1) {        //平局
-        //     // this.playVideo(Type.Start);
-        //     var delayAct = cc.delayTime(2);
-        //     var cbAction = cc.callFunc(this.playVideo, this.node, Type.Start);
-        //     cc.log('shibai3');
-        //     this.node.runAction(cc.sequence(delayAct, cbAction));
-        //     cc.log('shibai4');
-        // }
-        // if(final == 2) {        //胜利
-        //     // this.playVideo(Type.Lock);
-        //     var delayAct = cc.delayTime(2);
-        //     var cbAction = cc.callFunc(this.playVideo, this.node, Type.Lock);
-        //     cc.log('shibai5');
-        //     this.node.runAction(cc.sequence(delayAct, cbAction));
-        //     cc.log('shibai6');
-        //     if(this._level<=4) {
-        //         this._level++;
-        //     }
-        // }
-        cc.log('testtest');
-        
-        this.node.runAction(cc.sequence(cc.delayTime(3), cc.callFunc(function(target, data) {
-            if(data == Type.Win) {
-                this.playVideo(Type.Win);
-            } else if(data == Type.Lock) {
-                this.playVideo(Type.Lock);
-            } else if(data == Type.Start) {
-                this.playVideo(Type.Start);
-            } 
+        //播放对应结果的相关视频及相关生命值       
+        this.node.runAction(cc.sequence(cc.delayTime(3), cc.callFunc(function(target, data) {   //target必须带上，否则将把data看作是object
+            if(!Object.values(Type).includes(data)) {
+                return;
+            }
+            cc.log(data);
+            cc.log(target);
+            // self.playVideo(data);
+            this.playVideo(data);
         }, this, Type.Win)));
     }, 
 
-    // cb(a) {
-    //     if(a!="1") {
-    //         cc.log('cbcb2');
-    //         return;
-    //     }
-    //     cc.log('cbcb1');
-    //     return;
-    // },
-
     playVideo (index) {
+        if(!Object.values(Type).includes(index)) {
+            return;
+        }
         var type = ["win", "start", "lock"];
         if(type[index]!=undefined && type[index]!="win") {
             var clip = "res/raw-assets/resources/video/"+this._level+ "_" + type[index]+".mp4";
