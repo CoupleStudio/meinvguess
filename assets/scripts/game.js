@@ -88,7 +88,6 @@ cc.Class({
             this.showMyGuess();
             return;
         }
-
     },
 
     playGuessAnim () {
@@ -122,32 +121,28 @@ cc.Class({
         var stone = ["scissor", "stone", "cloth"];
         var cloth = ["stone", "cloth", "scissor"];
 
+        function showSpGuessGG(path, sp) {
+            cc.loader.loadRes(path, cc.SpriteFrame, (err, spriteFrame)=>{
+                sp.node.active = !sp.node.active;
+                sp.spriteFrame = spriteFrame;
+                sp.node.runAction(cc.moveTo(1, cc.p(150, 0)));
+            });
+        }
+        
         switch(e.target.name) {
             case "btnScissor":
             this.generateResult(scissor);
-            cc.loader.loadRes("icon_scissor_model_result", cc.SpriteFrame, (err, spriteFrame)=>{
-                self.spGuessGG.node.active = !self.spGuessGG.node.active;
-                self.spGuessGG.spriteFrame = spriteFrame;
-                self.spGuessGG.node.runAction(cc.moveTo(1, cc.p(150, 0)));
-            });
+            showSpGuessGG("icon_scissor_model_result", this.spGuessGG);
             break;
 
             case "btnStone":
             this.generateResult(stone);
-            cc.loader.loadRes("icon_stone_model_result", cc.SpriteFrame, (err, spriteFrame)=>{
-                self.spGuessGG.node.active = !self.spGuessGG.node.active;
-                self.spGuessGG.spriteFrame = spriteFrame;
-                self.spGuessGG.node.runAction(cc.moveTo(1, cc.p(150, 0)));
-            });
+            showSpGuessGG("icon_stone_model_result", this.spGuessGG);
             break;
 
             case "btnCloth":
             this.generateResult(cloth);
-            cc.loader.loadRes("icon_cloth_model_result", cc.SpriteFrame, (err, spriteFrame)=>{
-                self.spGuessGG.node.active = !self.spGuessGG.node.active;
-                self.spGuessGG.spriteFrame = spriteFrame;
-                self.spGuessGG.node.runAction(cc.moveTo(1, cc.p(150, 0)));
-            });
+            showSpGuessGG("icon_cloth_model_result", this.spGuessGG);
             break;
 
             default:
@@ -158,7 +153,7 @@ cc.Class({
 
     generateGuess () {
         var range = ['scissor', 'stone', 'cloth'];
-        var index = Math.floor(cc.random0To1()*3+0);
+        var index = Math.floor(cc.random0To1()*3+0);    //取值范围【0-2】
         return range[index];
     },
 
@@ -198,11 +193,28 @@ cc.Class({
         this.guessAnim.node.active = !this.guessAnim.node.active;
 
         this._status = !this._status;
+
+        //播放对应结果的相关视频及相关生命值
+        if(final == 0) {        //失败
+            cc.log('shibai');
+            this.playVideo(Type.Win);
+        }
+        if(final == 1) {        //平局
+            this.playVideo(Type.Start);
+
+        }
+        if(final == 2) {        //胜利
+            this.playVideo(Type.Lock);
+            if(this._level<=4) {
+                this._level++;
+            }
+        }
+
     }, 
 
     playVideo (index) {
         var type = ["win", "start", "lock"];
-        if(type[index]!=undefined) {
+        if(type[index]!=undefined && type[index]!="win") {
             var clip = "res/raw-assets/resources/video/"+this._level+ "_" + type[index]+".mp4";
             cc.log('clipdebug');
             cc.log(clip);
@@ -210,10 +222,17 @@ cc.Class({
             this.videoPlayer.play();
             return;
         }
+        if(type[index] == "win") {
+            var randIndex = Math.floor(cc.random0To1()*3+0)+1;
+            var clip = "res/raw-assets/resources/video/"+this._level+ "_" + type[index] + randIndex +".mp4";
+            cc.log('clipdebug1');
+            cc.log(clip);
+            this.videoPlayer.clip = clip;
+            this.videoPlayer.play();
+            return;
+        }
         return;
     },
-
-
 
     restart () {
         this._status = !this._status;
