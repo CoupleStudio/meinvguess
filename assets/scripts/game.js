@@ -87,7 +87,6 @@ cc.Class({
     onVideoPlayerEvent (sender, event) {
         if(event === cc.VideoPlayer.EventType.COMPLETED) {
             if(this._status == 1) {     //开始
-                this.resultLayer.active = true;
                 this.playGuessAnim();
                 this.myGuess.active = true;
                 return;
@@ -107,7 +106,7 @@ cc.Class({
     },
 
     playGuessAnim () {
-        this.resultLayer.active = true;
+        
         var animation = this.guessAnim;
         animation.node.active = !animation.node.active;
         cc.log('debug0');
@@ -137,7 +136,7 @@ cc.Class({
 
         function showSpGuessGG(path, sp) {
             cc.loader.loadRes(path, cc.SpriteFrame, (err, spriteFrame)=>{
-                sp.node.active = !sp.node.active;
+                sp.node.active = true;
                 sp.spriteFrame = spriteFrame;
                 sp.node.runAction(cc.moveTo(1, cc.p(150, 0)));
             });
@@ -175,12 +174,14 @@ cc.Class({
         var guess = this.generateGuess();
         var path = "icon_"+guess+"_user_result"
         cc.loader.loadRes(path, cc.SpriteFrame, (err, spriteFrame)=>{
-            self.spGuessMM.node.active = !self.spGuessMM.node.active;
+            self.spGuessMM.node.active = true;
             self.spGuessMM.spriteFrame = spriteFrame;
             self.spGuessMM.node.runAction(cc.moveTo(1, cc.p(-150, 0)));
         });
 
         if(arr.indexOf(guess) == -1) {
+
+            cc.log('test000');
             return;
         }
         this._final = arr.indexOf(guess);
@@ -188,12 +189,14 @@ cc.Class({
     },
 
     showResult (final) {
-        var self = this;
-        var result = ["lost", "draw", "win"];
-        this.spVS.node.active = !this.spVS.node.active;
         if(final == -1) {
             return;
         }
+
+        var self = this;
+        var result = ["lost", "draw", "win"];
+        this.spVS.node.active = true;
+        
         var path = "game_"+result[final]+"_icon";
         cc.log(path);
         cc.loader.loadRes(path, cc.SpriteFrame, (err, spriteFrame)=> {
@@ -212,6 +215,12 @@ cc.Class({
             if(!Object.values(Type).includes(data)) {
                 return;
             }
+
+            self.spVS.node.active = false;
+            this.spResult.node.setPosition(cc.v2(0, 782));
+            self.spGuessGG.node.active = false;
+            self.spGuessMM.node.active = false;
+
             // self.playVideo(data);
             this.playVideo(data);
         }, this, this._status)));
@@ -221,7 +230,8 @@ cc.Class({
         if(!Object.values(Type).includes(index)) {
             return;
         }
-        this.resultLayer.active = false;    //隐藏结果层
+        
+
         var type = ["win", "start", "lock"];
         if(type[index]!=undefined && type[index]!="win") {
             var clip = "res/raw-assets/resources/video/"+this._level+ "_" + type[index]+".mp4";
