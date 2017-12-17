@@ -1452,11 +1452,11 @@
     "spResult": {
       "__id__": 31
     },
-    "spGuessMM": {
-      "__id__": 34
-    },
     "spGuessGG": {
       "__id__": 36
+    },
+    "spGuessMM": {
+      "__id__": 34
     },
     "resultLayer": {
       "__id__": 27

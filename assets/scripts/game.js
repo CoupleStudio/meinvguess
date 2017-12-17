@@ -54,12 +54,12 @@ cc.Class({
             type: cc.Sprite,
         },
 
-        spGuessMM: {
+        spGuessGG: {
             default: null,
             type: cc.Sprite,
         }, 
 
-        spGuessGG: {
+        spGuessMM: {
             default: null, 
             type: cc.Sprite,
         }, 
@@ -145,17 +145,17 @@ cc.Class({
         switch(e.target.name) {
             case "btnScissor":
             this.generateResult(scissor);
-            showSpGuessGG("icon_scissor_model_result", this.spGuessGG);
+            showSpGuessGG("icon_scissor_user_result", this.spGuessGG);
             break;
 
             case "btnStone":
             this.generateResult(stone);
-            showSpGuessGG("icon_stone_model_result", this.spGuessGG);
+            showSpGuessGG("icon_stone_user_result", this.spGuessGG);
             break;
 
             case "btnCloth":
             this.generateResult(cloth);
-            showSpGuessGG("icon_cloth_model_result", this.spGuessGG);
+            showSpGuessGG("icon_cloth_user_result", this.spGuessGG);
             break;
 
             default:
@@ -169,10 +169,10 @@ cc.Class({
         return range[index];
     },
 
-    generateResult (arr) {
+    generateResult (arr) {      //对应电脑猜拳结果
         var self = this;
         var guess = this.generateGuess();
-        var path = "icon_"+guess+"_user_result"
+        var path = "icon_"+guess+"_model_result"
         cc.loader.loadRes(path, cc.SpriteFrame, (err, spriteFrame)=>{
             self.spGuessMM.node.active = true;
             self.spGuessMM.spriteFrame = spriteFrame;
@@ -180,7 +180,6 @@ cc.Class({
         });
 
         if(arr.indexOf(guess) == -1) {
-
             cc.log('test000');
             return;
         }
@@ -194,7 +193,7 @@ cc.Class({
         }
 
         var self = this;
-        var result = ["lost", "draw", "win"];
+        var result = ["win", "draw", "lost"];
         this.spVS.node.active = true;
         
         var path = "game_"+result[final]+"_icon";
@@ -215,6 +214,7 @@ cc.Class({
             if(!Object.values(Type).includes(data)) {
                 return;
             }
+            this.myGuess.active = false;
 
             self.spVS.node.active = false;
             this.spResult.node.setPosition(cc.v2(0, 782));
@@ -232,7 +232,7 @@ cc.Class({
         }
         
 
-        var type = ["win", "start", "lock"];
+        var type = ["lock", "start", "win"];    //lock是赢，win是输，start是重新开始
         if(type[index]!=undefined && type[index]!="win") {
             var clip = "res/raw-assets/resources/video/"+this._level+ "_" + type[index]+".mp4";
             cc.log('clipdebug');
