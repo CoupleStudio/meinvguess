@@ -77,7 +77,16 @@ cc.Class({
         spBlood: {
             default: null,
             type: cc.Sprite,
-        }
+        },
+
+        alertLayer: {
+            default: null,
+            type: cc.Node,
+        },
+
+        lblTip: cc.Label,
+        lblDesc: cc.Label,
+        lblBtn: cc.Label,
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -85,29 +94,30 @@ cc.Class({
     // onLoad () {},
 
     start () {
-        var self = this;
-        this._final = -1;   //0代表输，1代表平局，2代表赢
-        this._status = 1;  //-1代表结束，0代表Win，1代表Start，2代表Lock
-        this._level = 1;    //level从1开始，5为止
-        this._blood = 5;    //初始化为5个红心
         this.initGame();
     },
 
     initGame () {
         var self = this;
-        this.lblLevel.string = "第"+this._level+"/5关";
-        var path = "blood_"+this._blood;
-        if(this._blood<=0) {
-            path = "blood_none";
+        this.alertLayer.active = false;
+
+        this._final = -1;   //0代表输，1代表平局，2代表赢
+        this._status = 1;  //-1代表结束，0代表Win，1代表Start，2代表Lock
+        this._level = 1;    //level从1开始，5为止
+        if(cc.sys.localStorage.getItem("level") != null) {
+            this._level = cc.sys.localStorage.getItem("level");
         }
-        cc.loader.loadRes(path, cc.SpriteFrame, (err, spriteFrame)=>{
-            self.spBlood.spriteFrame = spriteFrame;
-        });
-        this.playVideo(Type.Start);
+        this._blood = 1;    //初始化为5个红心
+        if(cc.sys.localStorage.getItem("blood") != null) {
+            this._blood = cc.sys.localStorage.getItem("blood");
+        }
+
+        this.refreshGame();
     },
 
     refreshGame () {
         var self = this;
+        this._status = 1;   //-1代表结束，0代表Win，1代表Start，2代表Lock
         this.lblLevel.string = "第"+this._level+"/5关";
         var path = "blood_"+this._blood;
         if(this._blood<=0) {
@@ -116,6 +126,16 @@ cc.Class({
         cc.loader.loadRes(path, cc.SpriteFrame, (err, spriteFrame)=>{
             self.spBlood.spriteFrame = spriteFrame;
         });
+        if(this._blood <= 0) {
+            cc.log('gameover');
+            this.showBuyAlert();
+            return;
+        }
+        if(this._level >=6) {
+            cc.log('have passed');
+            return;
+        }
+        this.playVideo(Type.Start);
     },
 
     // update (dt) {},
@@ -129,23 +149,26 @@ cc.Class({
             }
             if(this._status == 2) {     //输
                 this._blood--;
-                this._status = 1;
+                if(this._blood <= 0) {
+                    this._blood = 0;
+                }
+                cc.sys.localStorage.setItem("blood", this._blood);
                 this.refreshGame();
-                this.playVideo(Type.Start);
                 return;
             }
             if(this._status == 0) {     //赢
                 this._level++;
-                this._status = 1;
+                if(this._level >=6) {
+                    this._level = 6;
+                }
+                cc.sys.localStorage.setItem("level", this._level);
                 this.refreshGame();
-                this.playVideo(Type.Start);
                 return;
             }
         }
     },
 
     playGuessAnim () {
-        
         var animation = this.guessAnim;
         animation.node.active = !animation.node.active;
         cc.log('debug0');
@@ -254,7 +277,6 @@ cc.Class({
                 return;
             }
            
-
             self.spVS.node.active = false;
             this.spResult.node.setPosition(cc.v2(0, 782));
             self.spGuessGG.node.active = false;
@@ -290,5 +312,36 @@ cc.Class({
         }
         return;
     },
+
+    showBuyAlert () {
+        this.videoPlayer.node.active = false;
+
+        this.alertLayer.active = true;
+        this.lblTip.string = "请确认您的购买";
+        this.lblDesc.string = "您的爱心已用完，确定花5.0元原地复活吗？";
+        this.lblBtn.string = "确定";
+    },
+
+    showShareAlert () {
+        this.alertLayer.active = true;
+        this.lblTip.string = "有爱提示";
+        this.lblDesc.string = "恭喜已通关，是否现在分享给您的好友";
+        this.lblBtn.string = "分享";
+    },
+
+    showRestartAlert () {
+        this.alertLayer.active = true;
+        this.lblTip.string = "有爱提示";
+        this.lblDesc.string = "该美女您已通关，是否重新开始？";
+        this.lblBtn.string = "确定";
+    },
+
+    onbtnClose (e) {
+        cc.log('close');
+        this.alertLayer.active = false;
+        cc.director.loadScene("menuScene");
+    }
+
+
 
 });
