@@ -67,6 +67,16 @@ cc.Class({
         resultLayer: {
             default: null,
             type: cc.Node,
+        },
+
+        lblLevel: {
+            default: null,
+            type: cc.Label,
+        },
+
+        spBlood: {
+            default: null,
+            type: cc.Sprite,
         }
     },
 
@@ -79,7 +89,33 @@ cc.Class({
         this._final = -1;   //0代表输，1代表平局，2代表赢
         this._status = 1;  //-1代表结束，0代表Win，1代表Start，2代表Lock
         this._level = 1;    //level从1开始，5为止
+        this._blood = 5;    //初始化为5个红心
+        this.initGame();
+    },
+
+    initGame () {
+        var self = this;
+        this.lblLevel.string = "第"+this._level+"/5关";
+        var path = "blood_"+this._blood;
+        if(this._blood<=0) {
+            path = "blood_none";
+        }
+        cc.loader.loadRes(path, cc.SpriteFrame, (err, spriteFrame)=>{
+            self.spBlood.spriteFrame = spriteFrame;
+        });
         this.playVideo(Type.Start);
+    },
+
+    refreshGame () {
+        var self = this;
+        this.lblLevel.string = "第"+this._level+"/5关";
+        var path = "blood_"+this._blood;
+        if(this._blood<=0) {
+            path = "blood_none";
+        }
+        cc.loader.loadRes(path, cc.SpriteFrame, (err, spriteFrame)=>{
+            self.spBlood.spriteFrame = spriteFrame;
+        });
     },
 
     // update (dt) {},
@@ -91,14 +127,17 @@ cc.Class({
                 this.myGuess.active = true;
                 return;
             }
-            if(this._status == 2) {     //赢
-                this._level++;
+            if(this._status == 2) {     //输
+                this._blood--;
                 this._status = 1;
+                this.refreshGame();
                 this.playVideo(Type.Start);
                 return;
             }
-            if(this._status == 0) {     //输
+            if(this._status == 0) {     //赢
+                this._level++;
                 this._status = 1;
+                this.refreshGame();
                 this.playVideo(Type.Start);
                 return;
             }
@@ -138,10 +177,10 @@ cc.Class({
             cc.loader.loadRes(path, cc.SpriteFrame, (err, spriteFrame)=>{
                 sp.node.active = true;
                 sp.spriteFrame = spriteFrame;
-                sp.node.runAction(cc.moveTo(1, cc.p(150, 0)));
+                // sp.node.runAction(cc.moveTo(1, cc.p(150, 0)));
             });
         }
-        
+        this.myGuess.active = false;
         switch(e.target.name) {
             case "btnScissor":
             this.generateResult(scissor);
@@ -176,7 +215,7 @@ cc.Class({
         cc.loader.loadRes(path, cc.SpriteFrame, (err, spriteFrame)=>{
             self.spGuessMM.node.active = true;
             self.spGuessMM.spriteFrame = spriteFrame;
-            self.spGuessMM.node.runAction(cc.moveTo(1, cc.p(-150, 0)));
+            // self.spGuessMM.node.runAction(cc.moveTo(1, cc.p(-150, 0)));
         });
 
         if(arr.indexOf(guess) == -1) {
@@ -200,7 +239,7 @@ cc.Class({
         cc.log(path);
         cc.loader.loadRes(path, cc.SpriteFrame, (err, spriteFrame)=> {
             self.spResult.spriteFrame = spriteFrame;
-            self.spResult.node.runAction(cc.moveTo(1, cc.p(0, -100)));
+            self.spResult.node.runAction(cc.moveTo(1, cc.p(0, -60)));
         });
 
         //停止guess动画
@@ -214,7 +253,7 @@ cc.Class({
             if(!Object.values(Type).includes(data)) {
                 return;
             }
-            this.myGuess.active = false;
+           
 
             self.spVS.node.active = false;
             this.spResult.node.setPosition(cc.v2(0, 782));
@@ -231,7 +270,6 @@ cc.Class({
             return;
         }
         
-
         var type = ["lock", "start", "win"];    //lock是赢，win是输，start是重新开始
         if(type[index]!=undefined && type[index]!="win") {
             var clip = "res/raw-assets/resources/video/"+this._level+ "_" + type[index]+".mp4";
@@ -252,15 +290,5 @@ cc.Class({
         }
         return;
     },
-
-    restart () {
-        this._status = !this._status;
-        this.guessAnim.node.active = !this.guessAnim.node.active;
-        this.guessAnim.play();
-
-        cc.log('restart');
-    }
-
-
 
 });
