@@ -64,6 +64,10 @@ cc.Class({
             type: cc.Sprite,
         }, 
 
+        resultLayer: {
+            default: null,
+            type: cc.Node,
+        }
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -73,7 +77,7 @@ cc.Class({
     start () {
         var self = this;
         this._final = -1;   //0代表输，1代表平局，2代表赢
-        this._status = true;    //true代表开始，false代表结束
+        this._status = 1;  //-1代表结束，0代表Win，1代表Start，2代表Lock
         this._level = 1;    //level从1开始，5为止
         this.playVideo(Type.Start);
     },
@@ -82,15 +86,28 @@ cc.Class({
 
     onVideoPlayerEvent (sender, event) {
         if(event === cc.VideoPlayer.EventType.COMPLETED) {
-            cc.log('debug00');
-            cc.log('test_dev');
-            this.playGuessAnim();
-            this.showMyGuess();
-            return;
+            if(this._status == 1) {     //开始
+                this.resultLayer.active = true;
+                this.playGuessAnim();
+                this.myGuess.active = true;
+                return;
+            }
+            if(this._status == 2) {     //赢
+                this._level++;
+                this._status = 1;
+                this.playVideo(Type.Start);
+                return;
+            }
+            if(this._status == 0) {     //输
+                this._status = 1;
+                this.playVideo(Type.Start);
+                return;
+            }
         }
     },
 
     playGuessAnim () {
+        this.resultLayer.active = true;
         var animation = this.guessAnim;
         animation.node.active = !animation.node.active;
         cc.log('debug0');
@@ -107,15 +124,12 @@ cc.Class({
         });
     },
 
-    showMyGuess () {
-        this.myGuess.active = !this.myGuess.active;
-    },
 
     onbtnGuessClick (e) {
         cc.log("debug2");
-        if(this._status != true) {
-            return;
-        }
+        // if(this._status != -1) {
+        //     return;
+        // }
         var self = this;
         var scissor = ["cloth", "scissor", "stone"];
         var stone = ["scissor", "stone", "cloth"];
@@ -150,7 +164,6 @@ cc.Class({
         }
     },
         
-
     generateGuess () {
         var range = ['scissor', 'stone', 'cloth'];
         var index = Math.floor(cc.random0To1()*3+0);    //取值范围【0-2】
@@ -192,24 +205,23 @@ cc.Class({
         this.guessAnim.stop();
         this.guessAnim.node.active = !this.guessAnim.node.active;
 
-        this._status = !this._status;
+        this._status = final;
 
         //播放对应结果的相关视频及相关生命值       
         this.node.runAction(cc.sequence(cc.delayTime(3), cc.callFunc(function(target, data) {   //target必须带上，否则将把data看作是object
             if(!Object.values(Type).includes(data)) {
                 return;
             }
-            cc.log(data);
-            cc.log(target);
             // self.playVideo(data);
             this.playVideo(data);
-        }, this, Type.Win)));
+        }, this, this._status)));
     }, 
 
     playVideo (index) {
         if(!Object.values(Type).includes(index)) {
             return;
         }
+        this.resultLayer.active = false;    //隐藏结果层
         var type = ["win", "start", "lock"];
         if(type[index]!=undefined && type[index]!="win") {
             var clip = "res/raw-assets/resources/video/"+this._level+ "_" + type[index]+".mp4";
@@ -219,7 +231,7 @@ cc.Class({
             this.videoPlayer.play();
             return;
         }
-        if(type[index] == "win") {
+        if(type[index] == "win") {                  //输
             var randIndex = Math.floor(cc.random0To1()*3+0)+1;
             var clip = "res/raw-assets/resources/video/"+this._level+ "_" + type[index] + randIndex +".mp4";
             cc.log('clipdebug1');

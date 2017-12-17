@@ -1003,7 +1003,7 @@
       }
     ],
     "_tag": -1,
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 37
@@ -1457,6 +1457,9 @@
     },
     "spGuessGG": {
       "__id__": 36
+    },
+    "resultLayer": {
+      "__id__": 27
     }
   }
 ]
