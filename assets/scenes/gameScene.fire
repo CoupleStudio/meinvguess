@@ -75,10 +75,13 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 69
+        "__id__": 70
       },
       {
-        "__id__": 70
+        "__id__": 71
+      },
+      {
+        "__id__": 72
       }
     ],
     "_prefab": null,
@@ -1975,7 +1978,7 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 68
+        "__id__": 69
       }
     ],
     "_prefab": null,
@@ -2040,7 +2043,7 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 67
+        "__id__": 68
       }
     ],
     "_prefab": null,
@@ -2335,7 +2338,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 44.04,
+      "width": 189,
       "height": 20
     },
     "_rotationX": 0,
@@ -2345,7 +2348,7 @@
     "_position": {
       "__type__": "cc.Vec2",
       "x": -184,
-      "y": -51
+      "y": -42
     },
     "_skewX": 0,
     "_skewY": 0,
@@ -2374,7 +2377,7 @@
     "_N$horizontalAlign": 0,
     "_N$verticalAlign": 1,
     "_N$fontFamily": "Arial",
-    "_N$overflow": 0
+    "_N$overflow": 3
   },
   {
     "__type__": "cc.Node",
@@ -2564,7 +2567,11 @@
       "__uuid__": "1c996a43-0f50-4496-8b86-42d5baeeb378"
     },
     "hoverSprite": null,
-    "clickEvents": [],
+    "clickEvents": [
+      {
+        "__id__": 67
+      }
+    ],
     "_N$interactable": true,
     "_N$enableAutoGrayEffect": false,
     "_N$normalColor": {
@@ -2588,6 +2595,15 @@
     "_N$target": {
       "__id__": 62
     }
+  },
+  {
+    "__type__": "cc.ClickEvent",
+    "target": {
+      "__id__": 2
+    },
+    "component": "game",
+    "handler": "onbtnOK",
+    "customEventData": ""
   },
   {
     "__type__": "cc.Sprite",
@@ -2655,7 +2671,7 @@
       "height": 800
     },
     "_fitWidth": true,
-    "_fitHeight": false
+    "_fitHeight": true
   },
   {
     "__type__": "83c11WvY/1M646d3UnTwbnK",
@@ -2706,6 +2722,27 @@
     },
     "lblBtn": {
       "__id__": 64
+    }
+  },
+  {
+    "__type__": "3500dgaP71COrv0kcF1p5sw",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 2
+    },
+    "_enabled": true,
+    "choiceFail": {
+      "__uuid__": "4f9ba8a9-84f9-4093-b6a8-15af7df55215"
+    },
+    "choiceSuccess": {
+      "__uuid__": "5faf9538-5d7c-4f7d-b459-59dcabbc1eb3"
+    },
+    "guessChoice": {
+      "__uuid__": "ec8c7c4e-5760-47fa-bf83-c0353168aa4a"
+    },
+    "lock": {
+      "__uuid__": "55c64a13-4814-4cfd-ba49-f01a5fb90b46"
     }
   }
 ]

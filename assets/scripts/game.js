@@ -87,6 +87,7 @@ cc.Class({
         lblTip: cc.Label,
         lblDesc: cc.Label,
         lblBtn: cc.Label,
+
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -100,7 +101,7 @@ cc.Class({
     initGame () {
         var self = this;
         this.alertLayer.active = false;
-
+        this._btnType = -1;  //-1代表首次初始化，0代表购买确定，1代表分享，2代表重新开始确定
         this._final = -1;   //0代表输，1代表平局，2代表赢
         this._status = 1;  //-1代表结束，0代表Win，1代表Start，2代表Lock
         this._level = 1;    //level从1开始，5为止
@@ -133,6 +134,7 @@ cc.Class({
         }
         if(this._level >=6) {
             cc.log('have passed');
+            this.showRestartAlert();
             return;
         }
         this.playVideo(Type.Start);
@@ -188,13 +190,13 @@ cc.Class({
 
     onbtnGuessClick (e) {
         cc.log("debug2");
-        // if(this._status != -1) {
-        //     return;
-        // }
+        
         var self = this;
         var scissor = ["cloth", "scissor", "stone"];
         var stone = ["scissor", "stone", "cloth"];
         var cloth = ["stone", "cloth", "scissor"];
+
+        this.playAudio("guessChoice");
 
         function showSpGuessGG(path, sp) {
             cc.loader.loadRes(path, cc.SpriteFrame, (err, spriteFrame)=>{
@@ -271,6 +273,12 @@ cc.Class({
 
         this._status = final;
 
+        if(this._status == 0) {     //-1代表结束，0代表Win，1代表Start，2代表Lost
+            this.playAudio("choiceSuccess");
+        } else if(this._status == 2) {
+            this.playAudio("choiceFail");
+        }        
+
         //播放对应结果的相关视频及相关生命值       
         this.node.runAction(cc.sequence(cc.delayTime(3), cc.callFunc(function(target, data) {   //target必须带上，否则将把data看作是object
             if(!Object.values(Type).includes(data)) {
@@ -315,6 +323,7 @@ cc.Class({
 
     showBuyAlert () {
         this.videoPlayer.node.active = false;
+        this._btnType = 0;
 
         this.alertLayer.active = true;
         this.lblTip.string = "请确认您的购买";
@@ -323,6 +332,7 @@ cc.Class({
     },
 
     showShareAlert () {
+        this._btnType = 1;
         this.alertLayer.active = true;
         this.lblTip.string = "有爱提示";
         this.lblDesc.string = "恭喜已通关，是否现在分享给您的好友";
@@ -330,6 +340,9 @@ cc.Class({
     },
 
     showRestartAlert () {
+        cc.log('restart');
+        this.videoPlayer.node.active = false;
+        this._btnType = 2;
         this.alertLayer.active = true;
         this.lblTip.string = "有爱提示";
         this.lblDesc.string = "该美女您已通关，是否重新开始？";
@@ -340,8 +353,42 @@ cc.Class({
         cc.log('close');
         this.alertLayer.active = false;
         cc.director.loadScene("menuScene");
-    }
+    },
 
+    onbtnOK (e) {
+        switch(this._btnType) {
+            case 0:                                 //购买
+            this._btnType = -1;
+            this._blood = 1;
+            cc.sys.localStorage.setItem("blood", this._blood);
+            cc.director.loadScene("gameScene");
+            break;
+
+            case 1:                                 //分享
+            this._btnType = -1;
+            cc.log("shareshare");
+            break;
+
+            case 2:                                 //重新开始
+            this._btnType = -1;
+            this._level = 1;
+            cc.sys.localStorage.setItem("level", this._level);
+            cc.director.loadScene("menuScene");;
+            break;
+
+            default:
+            break;
+        }
+    },
+
+    playAudio (type) {      //type为choiceFail，choiceSuccess， guess_choice，lock
+        var arr = ["choiceFail", "choiceSuccess", "guessChoice", "lock"];
+        if(!arr.includes(type)) {
+            return;
+        }
+
+        this.node.getComponent("audioMgr").play(arr.indexOf(type));
+    }
 
 
 });
