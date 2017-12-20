@@ -302,7 +302,7 @@ cc.Class({
         
         var type = ["lock", "start", "win"];    //lock是赢，win是输，start是重新开始
         if(type[index]!=undefined && type[index]!="win") {
-            var clip = "res/raw-assets/resources/video/"+this._level+ "_" + type[index]+".mp4";
+            var clip = "res/raw-assets/res/"+this._level+ "_" + type[index]+".mp4";
             cc.log('clipdebug');
             cc.log(clip);
             this.videoPlayer.clip = clip;
@@ -311,7 +311,7 @@ cc.Class({
         }
         if(type[index] == "win") {                  //输
             var randIndex = Math.floor(cc.random0To1()*3+0)+1;
-            var clip = "res/raw-assets/resources/video/"+this._level+ "_" + type[index] + randIndex +".mp4";
+            var clip = "res/raw-assets/res/"+this._level+ "_" + type[index] + randIndex +".mp4";
             cc.log('clipdebug1');
             cc.log(clip);
             this.videoPlayer.clip = clip;
