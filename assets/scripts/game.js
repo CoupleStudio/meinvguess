@@ -108,7 +108,7 @@ cc.Class({
         if(cc.sys.localStorage.getItem("level") != null) {
             this._level = cc.sys.localStorage.getItem("level");
         }
-        this._blood = 1;    //初始化为5个红心
+        this._blood = 5;    //初始化为5个红心
         if(cc.sys.localStorage.getItem("blood") != null) {
             this._blood = cc.sys.localStorage.getItem("blood");
         }
