@@ -116,33 +116,10 @@ cc.Class({
         this.refreshGame();
     },
 
-    refreshGame () {
-        var self = this;
-        this._status = 1;   //-1代表结束，0代表Win，1代表Start，2代表Lock
-        this.lblLevel.string = "第"+this._level+"/5关";
-        var path = "blood_"+this._blood;
-        if(this._blood<=0) {
-            path = "blood_none";
-        }
-        cc.loader.loadRes(path, cc.SpriteFrame, (err, spriteFrame)=>{
-            self.spBlood.spriteFrame = spriteFrame;
-        });
-        if(this._blood <= 0) {
-            cc.log('gameover');
-            this.showBuyAlert();
-            return;
-        }
-        if(this._level >=6) {
-            cc.log('have passed');
-            this.showRestartAlert();
-            return;
-        }
-        this.playVideo(Type.Start);
-    },
-
     // update (dt) {},
 
     onVideoPlayerEvent (sender, event) {
+        
         if(event === cc.VideoPlayer.EventType.COMPLETED) {
             if(this._status == 1) {     //开始
                 this.playGuessAnim();
@@ -168,6 +145,56 @@ cc.Class({
                 return;
             }
         }
+    },
+
+    refreshGame () {
+        var self = this;
+        this._status = 1;   //-1代表结束，0代表Win，1代表Start，2代表Lock
+        this.lblLevel.string = "第"+this._level+"/5关";
+        var path = "blood_"+this._blood;
+        if(this._blood<=0) {
+            path = "blood_none";
+        }
+        cc.loader.loadRes(path, cc.SpriteFrame, (err, spriteFrame)=>{
+            self.spBlood.spriteFrame = spriteFrame;
+        });
+        if(this._blood <= 0) {
+            cc.log('gameover');
+            this.showBuyAlert();
+            return;
+        }
+        if(this._level >=6) {
+            cc.log('have passed');
+            this.showRestartAlert();
+            return;
+        }
+        this.playVideo(Type.Start);
+    },
+
+    playVideo (index) {
+        if(!Object.values(Type).includes(index)) {
+            return;
+        }
+        
+        var type = ["lock", "start", "win"];    //lock是赢，win是输，start是重新开始
+        if(type[index]!=undefined && type[index]!="win") {
+            var clip = "res/raw-assets/resources/video/"+this._level+ "_" + type[index]+".mp4";
+            cc.log('clipdebug');
+            cc.log(clip);
+            this.videoPlayer.clip = clip;
+            this.videoPlayer.play();
+            return;
+        }
+        if(type[index] == "win") {                  //输
+            var randIndex = Math.floor(cc.random0To1()*3+0)+1;
+            var clip = "res/raw-assets/resources/video/"+this._level+ "_" + type[index] + randIndex +".mp4";
+            cc.log('clipdebug1');
+            cc.log(clip);
+            this.videoPlayer.clip = clip;
+            this.videoPlayer.play();
+            return;
+        }
+        return;
     },
 
     playGuessAnim () {
@@ -294,32 +321,6 @@ cc.Class({
             this.playVideo(data);
         }, this, this._status)));
     }, 
-
-    playVideo (index) {
-        if(!Object.values(Type).includes(index)) {
-            return;
-        }
-        
-        var type = ["lock", "start", "win"];    //lock是赢，win是输，start是重新开始
-        if(type[index]!=undefined && type[index]!="win") {
-            var clip = "res/raw-assets/res/"+this._level+ "_" + type[index]+".mp4";
-            cc.log('clipdebug');
-            cc.log(clip);
-            this.videoPlayer.clip = clip;
-            this.videoPlayer.play();
-            return;
-        }
-        if(type[index] == "win") {                  //输
-            var randIndex = Math.floor(cc.random0To1()*3+0)+1;
-            var clip = "res/raw-assets/res/"+this._level+ "_" + type[index] + randIndex +".mp4";
-            cc.log('clipdebug1');
-            cc.log(clip);
-            this.videoPlayer.clip = clip;
-            this.videoPlayer.play();
-            return;
-        }
-        return;
-    },
 
     showBuyAlert () {
         this.videoPlayer.node.active = false;
