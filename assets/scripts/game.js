@@ -14,25 +14,6 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-        // foo: {
-        //     // ATTRIBUTES:
-        //     default: null,        // The default value will be used only when the component attaching
-        //                           // to a node for the first time
-        //     type: cc.SpriteFrame, // optional, default is typeof default
-        //     serializable: true,   // optional, default is true
-        // },
-        // bar: {
-        //     get () {
-        //         return this._bar;
-        //     },
-        //     set (value) {
-        //         this._bar = value;
-        //     }
-        // },
-        videoPlayer: {
-            default: null,
-            type: cc.VideoPlayer,
-        }, 
 
         guessAnim: {
             default: null,
@@ -88,6 +69,35 @@ cc.Class({
         lblDesc: cc.Label,
         lblBtn: cc.Label,
 
+        videoLayer: cc.Node,
+        pf_1_lock: cc.Prefab,
+        pf_1_start: cc.Prefab,
+        pf_1_win1: cc.Prefab,
+        pf_1_win2: cc.Prefab,
+        pf_1_win3: cc.Prefab,
+        pf_2_lock: cc.Prefab,
+        pf_2_start: cc.Prefab,
+        pf_2_win1: cc.Prefab,
+        pf_2_win2: cc.Prefab,
+        pf_2_win3: cc.Prefab,
+        pf_3_lock: cc.Prefab,
+        pf_3_start: cc.Prefab,
+        pf_3_win1: cc.Prefab,
+        pf_3_win2: cc.Prefab,
+        pf_3_win3: cc.Prefab,
+        pf_4_lock: cc.Prefab,
+        pf_4_start: cc.Prefab,
+        pf_4_win1: cc.Prefab,
+        pf_4_win2: cc.Prefab,
+        pf_4_win3: cc.Prefab,
+        pf_5_lock: cc.Prefab,
+        pf_5_start: cc.Prefab,
+        pf_5_win1: cc.Prefab,
+        pf_5_win2: cc.Prefab,
+        pf_5_win3: cc.Prefab,
+
+
+
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -103,7 +113,6 @@ cc.Class({
         this.alertLayer.active = false;
         this._btnType = -1;  //-1代表首次初始化，0代表购买确定，1代表分享，2代表重新开始确定
         this._final = -1;   //0代表输，1代表平局，2代表赢
-        this._status = 1;  //-1代表结束，0代表Win，1代表Start，2代表Lock
         this._level = 1;    //level从1开始，5为止
         if(cc.sys.localStorage.getItem("level") != null) {
             this._level = cc.sys.localStorage.getItem("level");
@@ -118,34 +127,34 @@ cc.Class({
 
     // update (dt) {},
 
-    onVideoPlayerEvent (sender, event) {
+    // onVideoPlayerEvent (sender, event) {
         
-        if(event === cc.VideoPlayer.EventType.COMPLETED) {
-            if(this._status == 1) {     //开始
-                this.playGuessAnim();
-                this.myGuess.active = true;
-                return;
-            }
-            if(this._status == 2) {     //输
-                this._blood--;
-                if(this._blood <= 0) {
-                    this._blood = 0;
-                }
-                cc.sys.localStorage.setItem("blood", this._blood);
-                this.refreshGame();
-                return;
-            }
-            if(this._status == 0) {     //赢
-                this._level++;
-                if(this._level >=6) {
-                    this._level = 6;
-                }
-                cc.sys.localStorage.setItem("level", this._level);
-                this.refreshGame();
-                return;
-            }
-        }
-    },
+    //     if(event === cc.VideoPlayer.EventType.COMPLETED) {
+    //         if(this._status == 1) {     //开始
+    //             this.playGuessAnim();
+    //             this.myGuess.active = true;
+    //             return;
+    //         }
+    //         if(this._status == 2) {     //输
+    //             this._blood--;
+    //             if(this._blood <= 0) {
+    //                 this._blood = 0;
+    //             }
+    //             cc.sys.localStorage.setItem("blood", this._blood);
+    //             this.refreshGame();
+    //             return;
+    //         }
+    //         if(this._status == 0) {     //赢
+    //             this._level++;
+    //             if(this._level >=6) {
+    //                 this._level = 6;
+    //             }
+    //             cc.sys.localStorage.setItem("level", this._level);
+    //             this.refreshGame();
+    //             return;
+    //         }
+    //     }
+    // },
 
     refreshGame () {
         var self = this;
@@ -159,12 +168,10 @@ cc.Class({
             self.spBlood.spriteFrame = spriteFrame;
         });
         if(this._blood <= 0) {
-            cc.log('gameover');
             this.showBuyAlert();
             return;
         }
         if(this._level >=6) {
-            cc.log('have passed');
             this.showRestartAlert();
             return;
         }
@@ -175,23 +182,29 @@ cc.Class({
         if(!Object.values(Type).includes(index)) {
             return;
         }
-        
+        this.videoLayer.removeAllChildren();
         var type = ["lock", "start", "win"];    //lock是赢，win是输，start是重新开始
         if(type[index]!=undefined && type[index]!="win") {
-            var clip = "res/raw-assets/resources/video/"+this._level+ "_" + type[index]+".mp4";
-            cc.log('clipdebug');
-            cc.log(clip);
-            this.videoPlayer.clip = clip;
-            this.videoPlayer.play();
+            // var clip = "res/raw-assets/resources/video/"+this._level+ "_" + type[index]+".mp4";
+            // cc.log('clipdebug');
+            // cc.log(clip);
+            // this.videoPlayer.clip = clip;
+            // this.videoPlayer.play();
+            
+            
+            var newNode = cc.instantiate(this["pf_"+this._level+"_"+type[index]]);
+            newNode.parent = this.videoLayer;
             return;
         }
         if(type[index] == "win") {                  //输
             var randIndex = Math.floor(cc.random0To1()*3+0)+1;
-            var clip = "res/raw-assets/resources/video/"+this._level+ "_" + type[index] + randIndex +".mp4";
-            cc.log('clipdebug1');
-            cc.log(clip);
-            this.videoPlayer.clip = clip;
-            this.videoPlayer.play();
+            // var clip = "res/raw-assets/resources/video/"+this._level+ "_" + type[index] + randIndex +".mp4";
+            // cc.log('clipdebug1');
+            // cc.log(clip);
+            // this.videoPlayer.clip = clip;
+            // this.videoPlayer.play();
+            var newNode = cc.instantiate(this["pf_"+this._level+"_"+type[index]+randIndex]);
+            newNode.parent = this.videoLayer;
             return;
         }
         return;
@@ -271,7 +284,6 @@ cc.Class({
         });
 
         if(arr.indexOf(guess) == -1) {
-            cc.log('test000');
             return;
         }
         this._final = arr.indexOf(guess);
@@ -313,12 +325,12 @@ cc.Class({
             }
            
             self.spVS.node.active = false;
-            this.spResult.node.setPosition(cc.v2(0, 782));
+            self.spResult.node.setPosition(cc.v2(0, 782));
             self.spGuessGG.node.active = false;
             self.spGuessMM.node.active = false;
 
             // self.playVideo(data);
-            this.playVideo(data);
+            self.playVideo(data);
         }, this, this._status)));
     }, 
 
